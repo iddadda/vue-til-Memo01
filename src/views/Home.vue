@@ -1,21 +1,52 @@
 <script setup>
-import { reactive } from "vue";
-
-const memos = [];
+import { reactive, onMounted } from "vue";
+import httpService from "@/services/HttpService";
 
 const state = reactive({
   memos: [],
+});
+const model = {
+  searchText: "",
+};
+// 메모 리스트 조회 함수
+const findAll = async (params) => {
+  const data = await httpService.findAll(params);
+  state.memos = data.resultData;
+};
+// 메모 검색
+const search = () => {
+  const params = {
+    search_text: model.searchText,
+  };
+  findAll(params);
+};
+// 첫 화면
+onMounted(() => {
+  findAll({});
 });
 </script>
 
 <template>
   <div class="memo-list">
-    <router-link to="/memos/add" class="add btn btn-light">
+    <router-link to="/memo/add" class="add btn btn-light">
       + 추가하기
     </router-link>
+
+    <div class="mb-3 mt-3 d-flex">
+      <input
+        type="text"
+        class="form-control p-3 me-1"
+        placeholder="검색어를 입력하시오"
+        v-model="model.searchText"
+        @keyup.enter="search"
+      />
+      <button type="button" class="btn btn-primary" @click="search">
+        검색
+      </button>
+    </div>
     <router-link
       v-for="m in state.memos"
-      :to="`/memos/${m.id}`"
+      :to="`/memo/${m.id}`"
       class="item"
       :key="m.id"
     >
