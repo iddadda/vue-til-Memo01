@@ -8,9 +8,10 @@ const state = reactive({
 const model = {
   searchText: "",
 };
+let data = null;
 // 메모 리스트 조회 함수
 const findAll = async (params) => {
-  const data = await httpService.findAll(params);
+  data = await httpService.findAll(params);
   state.memos = data.resultData;
 };
 // 메모 검색
@@ -19,6 +20,14 @@ const search = () => {
     search_text: model.searchText,
   };
   findAll(params);
+};
+// 메모 삭제 이벤트
+const remove = async (params) => {
+  if (!confirm(`[${params.title}]을/를 삭제하겠습니까?`)) {
+    return;
+  }
+  data = await httpService.deleteById(params);
+  alert("삭제 완료");
 };
 // 첫 화면
 onMounted(() => {
@@ -55,7 +64,7 @@ onMounted(() => {
           <div class="d-flex justify-content-between">
             <b>{{ m.title }}</b>
             <div>
-              <span role="button" @click.prevent="remove(m.id)">삭제</span>
+              <span role="button" @click.prevent="remove(m)">삭제</span>
             </div>
           </div>
           <div class="mt-2">{{ m.content }}</div>

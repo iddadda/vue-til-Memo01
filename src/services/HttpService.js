@@ -23,6 +23,10 @@ class HttpService {
     return res.data;
   }
   // 메모 삭제하기
+  async deleteById(params) {
+    const res = await axios.delete("/memo", { params });
+    return res.data;
+  }
 }
 
 export default new HttpService();
